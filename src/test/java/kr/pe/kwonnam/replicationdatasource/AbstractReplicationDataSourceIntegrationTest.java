@@ -1,8 +1,8 @@
 package kr.pe.kwonnam.replicationdatasource;
 
 import kr.pe.kwonnam.replicationdatasource.config.ReplicationDataSourceApplicationConfig;
-import kr.pe.kwonnam.replicationdatasource.jpa.User;
-import kr.pe.kwonnam.replicationdatasource.jpa.UserOuterService;
+import kr.pe.kwonnam.replicationdatasource.jpa.entity.User;
+import kr.pe.kwonnam.replicationdatasource.jpa.service.UserOuterService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

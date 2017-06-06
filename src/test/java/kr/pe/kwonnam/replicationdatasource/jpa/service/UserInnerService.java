@@ -1,5 +1,7 @@
-package kr.pe.kwonnam.replicationdatasource.jpa;
+package kr.pe.kwonnam.replicationdatasource.jpa.service;
 
+import kr.pe.kwonnam.replicationdatasource.jpa.entity.User;
+import kr.pe.kwonnam.replicationdatasource.jpa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,16 +17,16 @@ public class UserInnerService {
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public User findByUserIdWithPropagationRequired(Integer id) {
-        return userRepository.findById(id);
+        return userRepository.findOne(id);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     public User findByUserIdWithPropagationRequiresNew(Integer id) {
-        return userRepository.findById(id);
+        return userRepository.findOne(id);
     }
 
     @Transactional(propagation = Propagation.MANDATORY, readOnly = true)
     public User findByUserIdWithPropagationMandatory(Integer id) {
-        return userRepository.findById(id);
+        return userRepository.findOne(id);
     }
 }

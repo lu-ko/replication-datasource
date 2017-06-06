@@ -1,6 +1,11 @@
-package kr.pe.kwonnam.replicationdatasource.jpa;
+package kr.pe.kwonnam.replicationdatasource.jpa.entity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GenerationType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "users")

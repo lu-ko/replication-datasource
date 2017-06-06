@@ -1,5 +1,7 @@
-package kr.pe.kwonnam.replicationdatasource.jpa;
+package kr.pe.kwonnam.replicationdatasource.jpa.service;
 
+import kr.pe.kwonnam.replicationdatasource.jpa.entity.User;
+import kr.pe.kwonnam.replicationdatasource.jpa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,7 @@ public class UserOuterService {
      */
     @Transactional(readOnly = true)
     public User findByIdRead(Integer id) {
-        return userRepository.findById(id);
+        return userRepository.findOne(id);
     }
 
     /**
@@ -31,7 +33,7 @@ public class UserOuterService {
      */
     @Transactional(readOnly = false)
     public User findByIdWrite(Integer id) {
-        return userRepository.findById(id);
+        return userRepository.findOne(id);
     }
 
     @Transactional(readOnly = false)
@@ -49,9 +51,9 @@ public class UserOuterService {
     @Transactional(readOnly = false)
     public Map<String, User> findByIdWriteAndInnerReadWithPropagationRequired(Integer outerFirstId, Integer innerId, Integer outerSecondId) {
         Map<String, User> users = new HashMap<String, User>();
-        users.put("outerFirstUser", userRepository.findById(outerFirstId));
+        users.put("outerFirstUser", userRepository.findOne(outerFirstId));
         users.put("innerUser", userInnerService.findByUserIdWithPropagationRequired(innerId));
-        users.put("outerSecondUser", userRepository.findById(outerSecondId));
+        users.put("outerSecondUser", userRepository.findOne(outerSecondId));
         return users;
     }
 
@@ -63,9 +65,9 @@ public class UserOuterService {
     @Transactional(readOnly = false)
     public Map<String, User> findByIdWriteAndInnerReadWithPropagationRequiresNew(Integer outerFirstId, Integer innerId, Integer outerSecondId) {
         Map<String, User> users = new HashMap<String, User>();
-        users.put("outerFirstUser", userRepository.findById(outerFirstId));
+        users.put("outerFirstUser", userRepository.findOne(outerFirstId));
         users.put("innerUser", userInnerService.findByUserIdWithPropagationRequiresNew(innerId));
-        users.put("outerSecondUser", userRepository.findById(outerSecondId));
+        users.put("outerSecondUser", userRepository.findOne(outerSecondId));
         return users;
     }
 
@@ -76,9 +78,9 @@ public class UserOuterService {
     @Transactional(readOnly = false)
     public Map<String, User> findByIdWriteAndInnerReadWithPoropagationMandatory(Integer outerFirstId, Integer innerId, Integer outerSecondId) {
         Map<String, User> users = new HashMap<String, User>();
-        users.put("outerFirstUser", userRepository.findById(outerFirstId));
+        users.put("outerFirstUser", userRepository.findOne(outerFirstId));
         users.put("innerUser", userInnerService.findByUserIdWithPropagationMandatory(innerId));
-        users.put("outerSecondUser", userRepository.findById(outerSecondId));
+        users.put("outerSecondUser", userRepository.findOne(outerSecondId));
         return users;
     }
 }
