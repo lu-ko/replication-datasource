@@ -10,7 +10,7 @@ There are multiple ways of implementing replication datasources in Java environm
 * Java way for general applications without [Spring framework](http://spring.io/)
 * Other - e.g. Database Proxy server like [MySQL Proxy](http://dev.mysql.com/doc/mysql-proxy/en/) or [MaxScale](https://github.com/mariadb-corporation/MaxScale) and [MySql Replication JDBC Driver](http://dev.mysql.com/doc/connector-j/en/connector-j-master-slave-replication-connection.html)).
 
-Refer to [DatabaseConfiguration](https://github.com/lu-ko/replication-datasource/blob/master/src/main/java/sk/elko/demo/routing/configuration/DatabaseConfiguration.java) for main entry point to application code.
+We will describe first and second way in this project. Refer to [DatabaseConfiguration](https://github.com/lu-ko/replication-datasource/blob/master/src/main/java/sk/elko/demo/routing/configuration/DatabaseConfiguration.java) for main entry point to application code.
 
 ## Java way for applications with Spring Framework
 
@@ -77,7 +77,7 @@ public void writeExection() {
 Please refer to tests for verification.
 
 
-## Java way for general applications without
+## Java way for general applications without Spring Framework
 
 If you are not using Spring framework or you don't want to depend on it, then you can use prepared data source proxy [PureReplicationRoutingDataSource](https://github.com/lu-ko/replication-datasource/blob/master/src/main/java/sk/elko/demo/routing/datasource/PureReplicationRoutingDataSource.java) made from [LazyConnectionDataSourceProxy](https://github.com/spring-projects/spring-framework/blob/master/spring-jdbc/src/main/java/org/springframework/jdbc/datasource/LazyConnectionDataSourceProxy.java).
 
