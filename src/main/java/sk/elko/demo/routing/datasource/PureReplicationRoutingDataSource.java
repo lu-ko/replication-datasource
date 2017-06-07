@@ -1,4 +1,4 @@
-package kr.pe.kwonnam.replicationdatasource;
+package sk.elko.demo.routing.datasource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,16 +13,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Lazy Master/Slave(Write/Read) Replication DataSource Proxy.
- * You can route database connection to master or slave with this datasource proxy.
- * <p/>
- * This is copy &amp; modify of Spring framework's LayzyConnectionDataSourceProxy class.
- * <p/>
- * This DataSource's connection can not be reused with different readOnly attributes.
+ * Replication routing data source for applications running without Spring (see imports above).
+ *
+ * Lazy Master/Slave (Write/Read) Replication DataSource Proxy. This is copy &amp; modify of Spring framework's
+ * {@link org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy} class. This DataSource's connection can not
+ * be reused with different readOnly attributes.
  */
-public class LazyReplicationConnectionDataSourceProxy implements DataSource {
+public class PureReplicationRoutingDataSource implements DataSource {
 
-    private Logger log = LoggerFactory.getLogger(LazyReplicationConnectionDataSourceProxy.class);
+    private Logger log = LoggerFactory.getLogger(PureReplicationRoutingDataSource.class);
 
     private DataSource writeDataSource;
     private DataSource readDataSource;
@@ -34,10 +33,10 @@ public class LazyReplicationConnectionDataSourceProxy implements DataSource {
      * After setting {@link #writeDataSource} and {@link #readDataSource},
      * You must call {@link #init()} to initialize the configuration.
      */
-    public LazyReplicationConnectionDataSourceProxy() {
+    public PureReplicationRoutingDataSource() {
     }
 
-    public LazyReplicationConnectionDataSourceProxy(DataSource writeDataSource, DataSource readDataSource) {
+    public PureReplicationRoutingDataSource(DataSource writeDataSource, DataSource readDataSource) {
         this.writeDataSource = writeDataSource;
         this.readDataSource = readDataSource;
         init();
@@ -63,7 +62,7 @@ public class LazyReplicationConnectionDataSourceProxy implements DataSource {
     public DataSource setWriteDataSource(DataSource writeDataSource) {
         return this.writeDataSource = writeDataSource;
     }
-    
+
     public DataSource getWriteDataSource() {
         return this.writeDataSource;
     }
@@ -71,7 +70,7 @@ public class LazyReplicationConnectionDataSourceProxy implements DataSource {
     public DataSource setReadDataSource(DataSource readDataSource) {
         return this.readDataSource = readDataSource;
     }
-    
+
     public DataSource getReadDataSource() {
         return this.readDataSource;
     }

@@ -1,17 +1,15 @@
-package kr.pe.kwonnam.replicationdatasource.jpa.service;
+package sk.elko.demo.routing.service;
 
-import kr.pe.kwonnam.replicationdatasource.jpa.entity.User;
-import kr.pe.kwonnam.replicationdatasource.jpa.repository.UserRepository;
+import sk.elko.demo.routing.entity.User;
+import sk.elko.demo.routing.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * A service for a nested transaction test
- */
 @Service
 public class UserInnerService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -29,4 +27,5 @@ public class UserInnerService {
     public User findByUserIdWithPropagationMandatory(Integer id) {
         return userRepository.findOne(id);
     }
+
 }

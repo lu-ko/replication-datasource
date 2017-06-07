@@ -1,4 +1,4 @@
-package kr.pe.kwonnam.replicationdatasource.config;
+package sk.elko.demo.routing.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,9 +21,9 @@ import javax.sql.DataSource;
 @Configuration
 @PropertySource("classpath:application.properties")
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "kr.pe.kwonnam.replicationdatasource.jpa.repository")
-@ComponentScan(basePackages = "kr.pe.kwonnam.replicationdatasource.jpa.service")
-public class ReplicationDataSourceApplicationConfig {
+@EnableJpaRepositories(basePackages = "sk.elko.demo.routing.repository")
+@ComponentScan(basePackages = "sk.elko.demo.routing.service")
+public class DatabaseConfiguration {
 
     @Autowired
     private Environment env;
@@ -37,7 +37,7 @@ public class ReplicationDataSourceApplicationConfig {
 
         LocalContainerEntityManagerFactoryBean emfb = new LocalContainerEntityManagerFactoryBean();
         emfb.setJpaVendorAdapter(vendorAdapter);
-        emfb.setPackagesToScan("kr.pe.kwonnam.replicationdatasource.jpa.entity");
+        emfb.setPackagesToScan("sk.elko.demo.routing.entity");
         emfb.setDataSource(dataSource);
 
         emfb.getJpaPropertyMap().put("hibernate.connection.charSet", env.getProperty("hibernate.connection.charSet"));

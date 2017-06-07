@@ -14,9 +14,7 @@ targetCompatibility = '1.8'
 ext {
     slf4jVersion = '1.7.5'
     logbackVersion = '1.1.2'
-    if (!project.hasProperty('springVersion')) {
-        springVersion = '4.3.7.RELEASE'
-    }
+    springVersion = '4.3.7.RELEASE'
     springDataVersion = '1.11.3.RELEASE'
     h2Version = '1.4.184'
     hibernateVersion = '5.2.10.Final'
@@ -33,18 +31,18 @@ List loggers = [
 
 dependencies {
     compile "org.slf4j:slf4j-api:${slf4jVersion}"
-    testCompile loggers
+    compile loggers
+    compile "org.springframework:spring-context:${springVersion}"
+    compile "org.springframework:spring-orm:${springVersion}"
+    compile "org.springframework:spring-jdbc:${springVersion}"
+    compile "org.springframework:spring-tx:${springVersion}"
+    compile "org.springframework:spring-test:${springVersion}"
+    compile "org.springframework.data:spring-data-jpa:${springDataVersion}"
+    compile "org.hibernate:hibernate-entitymanager:${hibernateVersion}"
+    compile "com.h2database:h2:${h2Version}"
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.assertj:assertj-core:1.7.1'
-    testCompile "org.springframework:spring-context:${springVersion}"
-    testCompile "org.springframework:spring-orm:${springVersion}"
-    testCompile "org.springframework:spring-jdbc:${springVersion}"
-    testCompile "org.springframework:spring-tx:${springVersion}"
-    testCompile "org.springframework:spring-test:${springVersion}"
-    testCompile "org.springframework.data:spring-data-jpa:${springDataVersion}"
-    testCompile "org.hibernate:hibernate-entitymanager:${hibernateVersion}"
-    testCompile "com.h2database:h2:${h2Version}"
 }
 
 configurations {
@@ -72,7 +70,7 @@ tasks.withType(Checkstyle) {
         html.enabled false
     }
     ignoreFailures = true
-    configFile = file('config/checkstyle/checkstyle.xml') // rule 파일
+    configFile = file('config/checkstyle/checkstyle.xml')
 }
 
 tasks.withType(FindBugs) {
@@ -86,7 +84,7 @@ tasks.withType(FindBugs) {
 }
 
 pmd {
-    ignoreFailures = true // 위반이 있어도 report만하고 넘어감
+    ignoreFailures = true
 }
 
 apply plugin: 'jacoco'

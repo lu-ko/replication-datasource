@@ -1,4 +1,4 @@
-package kr.pe.kwonnam.replicationdatasource.jpa.entity;
+package sk.elko.demo.routing.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

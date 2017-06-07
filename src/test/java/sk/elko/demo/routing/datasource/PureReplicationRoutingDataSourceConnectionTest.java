@@ -1,6 +1,6 @@
-package kr.pe.kwonnam.replicationdatasource;
+package sk.elko.demo.routing.datasource;
 
-import kr.pe.kwonnam.replicationdatasource.LazyReplicationConnectionDataSourceProxy;
+import sk.elko.demo.routing.datasource.PureReplicationRoutingDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -13,33 +13,28 @@ import java.sql.ResultSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Transaction없이 {@link java.sql.Connection#setReadOnly(boolean)} 만으로 Replication 분기하는지 테스트.
- * 아래의 JDBC 코드는 간략화한 것으로 올바르지 않으니 실전 환경에서는 따라하지 마시오.
- */
-public class LazyReplicationConnectionDataSourceProxyConnectionIntegrationTest {
+public class PureReplicationRoutingDataSourceConnectionTest {
+
     private static DataSource replicationDataSource;
 
-    
     @BeforeClass
     public static void setUpClass() throws Exception {
         DataSource writeDataSource = new EmbeddedDatabaseBuilder()
                 .setName("writeDb")
                 .setType(EmbeddedDatabaseType.H2)
                 .setScriptEncoding("UTF-8")
-                .addScript("classpath:/writedb.sql").build();
+                .addScript("classpath:/script/writedb.sql").build();
 
         DataSource readDataSource = new EmbeddedDatabaseBuilder()
                 .setName("readDb")
                 .setType(EmbeddedDatabaseType.H2)
                 .setScriptEncoding("UTF-8")
-                .addScript("classpath:/readdb.sql").build();
-        
-        replicationDataSource = new LazyReplicationConnectionDataSourceProxy(writeDataSource, readDataSource);
-    }
-    
-    public String queryName(Connection connection, Integer id) throws Exception {
+                .addScript("classpath:/script/readdb.sql").build();
 
+        replicationDataSource = new PureReplicationRoutingDataSource(writeDataSource, readDataSource);
+    }
+
+    private String queryName(Connection connection, Integer id) throws Exception {
         PreparedStatement statement = connection.prepareStatement("select * from users where id = ?");
         statement.setInt(1, id);
 
@@ -59,7 +54,7 @@ public class LazyReplicationConnectionDataSourceProxyConnectionIntegrationTest {
 
         String name = queryName(connection, 1);
         assertThat(name).isEqualTo("read_1");
-        
+
         connection.close();
     }
 
@@ -67,29 +62,26 @@ public class LazyReplicationConnectionDataSourceProxyConnectionIntegrationTest {
     public void fromWrite() throws Exception {
         Connection connection = replicationDataSource.getConnection();
         connection.setReadOnly(false);
-        
+
         String name = queryName(connection, 3);
         assertThat(name).isEqualTo("write_3");
-        
+
         connection.close();
     }
 
-    /**
-     * 하나의 Connection으로 readOnly true -> false 형태의 재사용은 불가한다.
-     * @throws Exception
-     */
     @Test
     public void read_write_switch_fail() throws Exception {
         Connection connection = replicationDataSource.getConnection();
-        
+
         connection.setReadOnly(false);
         String readOnlyFalseName = queryName(connection, 1);
         assertThat(readOnlyFalseName).isEqualTo("write_1");
-        
+
         connection.setReadOnly(true);
         String readOnlyTrueName = queryName(connection, 2);
         assertThat(readOnlyTrueName).as("If connection reused, readOnly configuration follows the first setReadOnly value.").isEqualTo("write_2");
-        
+
         connection.close();
     }
+
 }

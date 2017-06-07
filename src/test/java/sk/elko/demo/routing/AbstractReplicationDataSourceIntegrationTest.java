@@ -1,8 +1,8 @@
-package kr.pe.kwonnam.replicationdatasource;
+package sk.elko.demo.routing;
 
-import kr.pe.kwonnam.replicationdatasource.config.ReplicationDataSourceApplicationConfig;
-import kr.pe.kwonnam.replicationdatasource.jpa.entity.User;
-import kr.pe.kwonnam.replicationdatasource.jpa.service.UserOuterService;
+import sk.elko.demo.routing.configuration.DatabaseConfiguration;
+import sk.elko.demo.routing.service.UserOuterService;
+import sk.elko.demo.routing.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ReplicationDataSourceApplicationConfig.class)
+@ContextConfiguration(classes = DatabaseConfiguration.class)
 public abstract class AbstractReplicationDataSourceIntegrationTest {
 
     private Logger log = LoggerFactory.getLogger(AbstractReplicationDataSourceIntegrationTest.class);

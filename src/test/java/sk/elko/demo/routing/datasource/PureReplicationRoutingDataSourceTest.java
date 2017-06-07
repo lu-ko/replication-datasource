@@ -1,4 +1,4 @@
-package kr.pe.kwonnam.replicationdatasource;
+package sk.elko.demo.routing.datasource;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LazyReplicationConnectionDataSourceProxyTest {
+public class PureReplicationRoutingDataSourceTest {
+
     @Mock
     private DataSource writeDataSource;
 
@@ -32,11 +33,11 @@ public class LazyReplicationConnectionDataSourceProxyTest {
 
     @Mock
     private Statement writeStatement;
-    
+
     @Mock
     private Statement readStatement;
-    
-    private LazyReplicationConnectionDataSourceProxy lazyReplicationConnectionDataSourceProxy;
+
+    private PureReplicationRoutingDataSource pureReplicationRoutingDataSource;
 
     @Before
     public void setUp() throws Exception {
@@ -45,12 +46,12 @@ public class LazyReplicationConnectionDataSourceProxyTest {
         given(writeConnection.createStatement()).willReturn(writeStatement);
         given(readConnection.createStatement()).willReturn(readStatement);
 
-        lazyReplicationConnectionDataSourceProxy = new LazyReplicationConnectionDataSourceProxy();
-        lazyReplicationConnectionDataSourceProxy.setWriteDataSource(writeDataSource);
-        lazyReplicationConnectionDataSourceProxy.setReadDataSource(readDataSource);
-        lazyReplicationConnectionDataSourceProxy.setDefaultAutoCommit(false);
-        lazyReplicationConnectionDataSourceProxy.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-        lazyReplicationConnectionDataSourceProxy.init();
+        pureReplicationRoutingDataSource = new PureReplicationRoutingDataSource();
+        pureReplicationRoutingDataSource.setWriteDataSource(writeDataSource);
+        pureReplicationRoutingDataSource.setReadDataSource(readDataSource);
+        pureReplicationRoutingDataSource.setDefaultAutoCommit(false);
+        pureReplicationRoutingDataSource.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+        pureReplicationRoutingDataSource.init();
     }
 
     @Test
@@ -69,10 +70,10 @@ public class LazyReplicationConnectionDataSourceProxyTest {
         given(writeConnection.getAutoCommit()).willReturn(true);
         given(writeConnection.getTransactionIsolation()).willReturn(Connection.TRANSACTION_REPEATABLE_READ);
 
-        lazyReplicationConnectionDataSourceProxy = new LazyReplicationConnectionDataSourceProxy(writeDataSource, readDataSource);
+        pureReplicationRoutingDataSource = new PureReplicationRoutingDataSource(writeDataSource, readDataSource);
 
-        assertThat(lazyReplicationConnectionDataSourceProxy.defaultAutoCommit()).isTrue();
-        assertThat(lazyReplicationConnectionDataSourceProxy.defaultTransactionIsolation()).isEqualTo(Connection.TRANSACTION_REPEATABLE_READ);
+        assertThat(pureReplicationRoutingDataSource.defaultAutoCommit()).isTrue();
+        assertThat(pureReplicationRoutingDataSource.defaultTransactionIsolation()).isEqualTo(Connection.TRANSACTION_REPEATABLE_READ);
         verifyZeroInteractions(readDataSource, readConnection);
     }
 
@@ -81,14 +82,14 @@ public class LazyReplicationConnectionDataSourceProxyTest {
         PrintWriter printWriter = mock(PrintWriter.class);
         given(writeDataSource.getLogWriter()).willReturn(printWriter);
 
-        assertThat(lazyReplicationConnectionDataSourceProxy.getLogWriter()).isSameAs(printWriter);
+        assertThat(pureReplicationRoutingDataSource.getLogWriter()).isSameAs(printWriter);
     }
 
     @Test
     public void shouldDelegateToWriteAndReadDataSourceSetLogWriter() throws Exception {
         PrintWriter printWriter = new PrintWriter(new StringWriter());
 
-        lazyReplicationConnectionDataSourceProxy.setLogWriter(printWriter);
+        pureReplicationRoutingDataSource.setLogWriter(printWriter);
 
         verify(writeDataSource).setLogWriter(eq(printWriter));
         verify(readDataSource).setLogWriter(eq(printWriter));
@@ -98,12 +99,12 @@ public class LazyReplicationConnectionDataSourceProxyTest {
     public void shouldDelegateToWriteDataSourceGetLoginTimeout() throws Exception {
         given(writeDataSource.getLoginTimeout()).willReturn(5);
 
-        assertThat(lazyReplicationConnectionDataSourceProxy.getLoginTimeout()).isEqualTo(5);
+        assertThat(pureReplicationRoutingDataSource.getLoginTimeout()).isEqualTo(5);
     }
 
     @Test
     public void shouldDelegateToWriteAndReadDataSourceSetLoginTimeout() throws Exception {
-        lazyReplicationConnectionDataSourceProxy.setLoginTimeout(11);
+        pureReplicationRoutingDataSource.setLoginTimeout(11);
 
         verify(writeDataSource).setLoginTimeout(11);
         verify(readDataSource).setLoginTimeout(11);
@@ -112,7 +113,7 @@ public class LazyReplicationConnectionDataSourceProxyTest {
 
     @Test
     public void shouldGetConnectionGivenProxy() throws Exception {
-        Connection connection = lazyReplicationConnectionDataSourceProxy.getConnection();
+        Connection connection = pureReplicationRoutingDataSource.getConnection();
         assertThat(connection).isNotNull();
         assertThat(connection.getClass().getName()).contains("Proxy");
 
@@ -121,7 +122,7 @@ public class LazyReplicationConnectionDataSourceProxyTest {
 
     @Test
     public void shouldGetConnectionWithUsernameGivenProxy() throws Exception {
-        Connection connection = lazyReplicationConnectionDataSourceProxy.getConnection("username", "password");
+        Connection connection = pureReplicationRoutingDataSource.getConnection("username", "password");
         assertThat(connection).isNotNull();
         assertThat(connection.getClass().getName()).contains("Proxy");
 
@@ -130,33 +131,33 @@ public class LazyReplicationConnectionDataSourceProxyTest {
 
     @Test
     public void shouldGetConnectionNotCalled__for_close() throws Exception {
-        Connection connection = lazyReplicationConnectionDataSourceProxy.getConnection();
+        Connection connection = pureReplicationRoutingDataSource.getConnection();
         connection.close();
-        
+
         verifyZeroInteractions(writeDataSource, readDataSource);
     }
 
     @Test
     public void shouldDelegateToReadDataSource_readOnly_true_statement() throws Exception {
-        Connection connection = lazyReplicationConnectionDataSourceProxy.getConnection();
+        Connection connection = pureReplicationRoutingDataSource.getConnection();
         connection.setReadOnly(true);
 
         Statement statement = connection.createStatement();
         statement.close();
         connection.close();
-        
+
         verify(readDataSource).getConnection();
         verify(readConnection).createStatement();
         verify(readConnection).close();
         verify(readStatement).close();
-        
+
         verifyZeroInteractions(writeDataSource, writeConnection);
     }
 
 
     @Test
     public void shouldDelegateToWriteDataSource_readOnly_false_statement() throws Exception {
-        Connection connection = lazyReplicationConnectionDataSourceProxy.getConnection();
+        Connection connection = pureReplicationRoutingDataSource.getConnection();
         connection.setReadOnly(false);
 
         Statement statement = connection.createStatement();
@@ -175,10 +176,10 @@ public class LazyReplicationConnectionDataSourceProxyTest {
     public void shouldDelegateGetConnectionWithUsername_readOnly_true_statement() throws Exception {
         final String expectedUsername = "myusername";
         final String expectedPassword = "mypassword";
-        
+
         given(writeDataSource.getConnection(expectedUsername, expectedPassword)).willReturn(writeConnection);
-        
-        Connection connection = lazyReplicationConnectionDataSourceProxy.getConnection(expectedUsername, expectedPassword);
+
+        Connection connection = pureReplicationRoutingDataSource.getConnection(expectedUsername, expectedPassword);
         connection.setReadOnly(false);
 
         Statement statement = connection.createStatement();
