@@ -1,6 +1,5 @@
 package sk.elko.demo.routing.datasource;
 
-import sk.elko.demo.routing.datasource.PureReplicationRoutingDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;

@@ -54,9 +54,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return String.format("User[id=%d, name='%s']", id, name);
     }
+
 }
